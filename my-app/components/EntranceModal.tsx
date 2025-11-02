@@ -69,7 +69,6 @@ export function EntranceModal({
       >
         <View className=" w-[75%] self-center ">
           <View>
-            <Text className=" text-3xl">Hello, this is a modal!</Text>
             <View className="mt-4 gap-3">
               {data?.entrances.map((ent: Entrance) => (
                 <Text
