@@ -7,10 +7,14 @@ import { router } from "expo-router";
 import { useLocation } from "@/context/LocationContext";
 import { LoginResponse } from "@/types/types";
 
+import { EntranceModal } from "@/components/EntranceModal";
+
 const EmployeeLoginScreen = () => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState<any | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const { locationId, token } = useLocation();
+
   async function handleLogin(pin: string) {
     // Implement login logic here
     console.log(passcode);
@@ -34,13 +38,18 @@ const EmployeeLoginScreen = () => {
         setError(res.error.split("or")[0]);
       } else {
         setError(null);
-        router.replace("/main");
+        // router.replace("/main");
+        handleModal();
       }
 
       console.log("data", res);
     } catch (error) {
       console.error("Error during login:", error);
     }
+  }
+
+  function handleModal() {
+    setModalVisible((curr) => !curr);
   }
 
   return (
@@ -70,6 +79,10 @@ const EmployeeLoginScreen = () => {
       >
         <Text className="text-white font-medium text-3xl">Login</Text>
       </TouchableOpacity>
+      <EntranceModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </SafeAreaView>
   );
 };
