@@ -7,3 +7,10 @@ export type LoginResponse = {
   token: string;
   error: string | null;
 };
+
+export type Entrance = {
+  id: number;
+  locationId: number;
+  name: string;
+  location?: any;
+};
