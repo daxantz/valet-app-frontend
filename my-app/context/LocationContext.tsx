@@ -6,6 +6,8 @@ interface LocationContextProps {
   setLocationId: (id: string) => void;
   token: string | null;
   setToken: (token: string) => void;
+  selectedEntrance: string | null;
+  setSelectedEntrance: (name: string) => void;
 }
 
 const LocationContext = createContext<LocationContextProps | undefined>(
@@ -15,10 +17,18 @@ const LocationContext = createContext<LocationContextProps | undefined>(
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [locationId, setLocationId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [selectedEntrance, setSelectedEntrance] = useState<string | null>(null);
 
   return (
     <LocationContext.Provider
-      value={{ locationId, setLocationId, token, setToken }}
+      value={{
+        locationId,
+        setLocationId,
+        token,
+        setToken,
+        selectedEntrance,
+        setSelectedEntrance,
+      }}
     >
       {children}
     </LocationContext.Provider>
