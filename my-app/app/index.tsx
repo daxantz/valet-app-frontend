@@ -26,11 +26,9 @@ const LoginScreen = () => {
 
       const res: LoginResponse = await data.json();
       console.log("response", res);
-      console.log("state", error);
-      if (!res.location) {
-        setError(
-          error instanceof Error ? error.message : "Invalid location code"
-        );
+
+      if (res.error) {
+        setError(res.error);
       } else {
         setLocationId(res.location.id);
         setToken(res.token);
@@ -55,7 +53,7 @@ const LoginScreen = () => {
         <Text className="text-2xl text-[#4A5565] ">
           Enter location access code
         </Text>
-        {error && <Text className="text-red-500">{error}</Text>}
+        {error && <Text className="text-red-500 text-3xl">{error}</Text>}
       </View>
 
       <TextInput

@@ -5,4 +5,5 @@ export type LoginResponse = {
     name: string;
   };
   token: string;
+  error: string | null;
 };
