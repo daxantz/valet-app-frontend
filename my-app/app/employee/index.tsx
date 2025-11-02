@@ -5,10 +5,11 @@ import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useLocation } from "@/context/LocationContext";
+import { LoginResponse } from "@/types/types";
 
 const EmployeeLoginScreen = () => {
   const [passcode, setPasscode] = useState("");
-
+  const [error, setError] = useState<any | null>(null);
   const { locationId, token } = useLocation();
   async function handleLogin(pin: string) {
     // Implement login logic here
@@ -28,8 +29,14 @@ const EmployeeLoginScreen = () => {
       );
       console.log(token);
 
-      const res = await data.json();
-      router.replace("/main");
+      const res: LoginResponse = await data.json();
+      if (res.error) {
+        setError(res.error.split("or")[0]);
+      } else {
+        setError(null);
+        router.replace("/main");
+      }
+
       console.log("data", res);
     } catch (error) {
       console.error("Error during login:", error);
@@ -48,6 +55,7 @@ const EmployeeLoginScreen = () => {
         <Text className="text-2xl text-[#4A5565] ">
           Enter Employee access code
         </Text>
+        {error && <Text className="text-red-500 text-3xl">{error}</Text>}
       </View>
 
       <TextInput
