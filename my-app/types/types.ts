@@ -14,3 +14,10 @@ export type Entrance = {
   name: string;
   location?: any;
 };
+
+export type Car = {
+  id: number;
+  ticket: string;
+  phoneNumber: string;
+  createdAt: string;
+};
