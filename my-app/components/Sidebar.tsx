@@ -2,8 +2,62 @@ import { Image } from "expo-image";
 import { View, Text } from "react-native";
 import SidebarButton from "./SidebarButton";
 import { Car } from "@/types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function Sidebar({ car }: { car: Car }) {
+async function deleteCar(
+  locationId: string,
+  entranceId: string,
+  carId: number
+) {
+  try {
+    console.log("Deleting car", { locationId, entranceId, carId });
+    const res = await fetch(
+      `http://localhost:3000/v1/location/${locationId}/entrance/${entranceId}/car/${carId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!res.ok) {
+      console.log("res", res.body);
+      throw new Error("Failed to delete car");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error deleting car", error);
+    throw error;
+  }
+}
+
+type SidebarProps = {
+  car: Car;
+  locationId: string;
+  entranceId: string;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Sidebar({
+  car,
+  locationId,
+  entranceId,
+  setModalVisible,
+}: SidebarProps) {
+  const queryClient = useQueryClient();
+
+  // useMutation for deleting a car
+  const deleteCarMutation = useMutation({
+    mutationFn: () => deleteCar(locationId, entranceId, car.id),
+    onSuccess: () => {
+      // After successful delete, invalidate the "cars" query so the UI refreshes
+      queryClient.invalidateQueries({ queryKey: ["cars"] });
+      console.log("✅ Car deleted successfully");
+    },
+    onError: (error) => {
+      console.error("❌ Failed to delete car:", error);
+    },
+  });
   return (
     <View className=" w-full bg-white h-screen">
       <View className="p-6">
@@ -30,8 +84,16 @@ export default function Sidebar({ car }: { car: Car }) {
       </View>
       <View>
         <SidebarButton text="Request Car" icon="bell" />
-        <SidebarButton text="Edit Details" icon="bell" />
-        <SidebarButton text="Check Out" icon="bell" />
+        <SidebarButton
+          text="Edit Details"
+          icon="bell"
+          onPress={() => setModalVisible((prev) => !prev)}
+        />
+        <SidebarButton
+          text="Check Out"
+          icon="bell"
+          onPress={() => deleteCarMutation.mutate()}
+        />
       </View>
     </View>
   );
