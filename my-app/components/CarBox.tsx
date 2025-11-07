@@ -1,11 +1,12 @@
 import { Car } from "@/types/types";
-import { View, Image, Text } from "react-native";
+import { Image, Text, TouchableOpacity } from "react-native";
 import getShortElapsed from "@/lib/util/timeFormat";
 import { useEffect, useState } from "react";
 type CardBoxProps = {
   car: Car;
+  setSelectedCar?: (car: Car) => void;
 };
-export default function CarBox({ car }: CardBoxProps) {
+export default function CarBox({ car, setSelectedCar }: CardBoxProps) {
   const [elapsed, setElapsed] = useState(getShortElapsed(car.createdAt));
 
   console.log(car.createdAt.split("T")[0]);
@@ -19,9 +20,10 @@ export default function CarBox({ car }: CardBoxProps) {
   }, [car.createdAt]);
 
   return (
-    <View
+    <TouchableOpacity
       key={car.ticket}
-      className="border border-gray-400 rounded-2xl w-52 items-center"
+      className="border border-gray-400 rounded-2xl w-52 items-center h-52 bg-white p-6"
+      onPress={() => setSelectedCar && setSelectedCar(car)}
     >
       <Image
         source={require("@/assets/images/car.png")}
@@ -29,6 +31,6 @@ export default function CarBox({ car }: CardBoxProps) {
       />
       <Text className="text-4xl">#{car.ticket}</Text>
       <Text className="text-4xl">{elapsed}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
