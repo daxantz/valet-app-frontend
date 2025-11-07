@@ -20,4 +20,6 @@ export type Car = {
   ticket: string;
   phoneNumber: string;
   createdAt: string;
+  make: string;
+  color: string;
 };
