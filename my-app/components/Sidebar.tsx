@@ -36,6 +36,7 @@ type SidebarProps = {
   locationId: string;
   entranceId: string;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedCar: React.Dispatch<React.SetStateAction<Car | null>>;
 };
 
 export default function Sidebar({
@@ -43,6 +44,7 @@ export default function Sidebar({
   locationId,
   entranceId,
   setModalVisible,
+  setSelectedCar,
 }: SidebarProps) {
   const queryClient = useQueryClient();
 
@@ -92,7 +94,10 @@ export default function Sidebar({
         <SidebarButton
           text="Check Out"
           icon="bell"
-          onPress={() => deleteCarMutation.mutate()}
+          onPress={() => {
+            deleteCarMutation.mutate();
+            setSelectedCar(null);
+          }}
         />
       </View>
     </View>
