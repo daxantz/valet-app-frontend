@@ -8,6 +8,9 @@ import CarBox from "@/components/CarBox";
 import Sidebar from "@/components/Sidebar";
 import EditModal from "@/components/editModal";
 
+import SidebarButton from "@/components/SidebarButton";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 async function fetchCars(locationId: string, entranceId: string) {
   try {
     const res = await fetch(
@@ -34,33 +37,46 @@ export default function Main() {
   });
   console.log(modalVisible);
   const sideBarPropsValid = selectedCar && locationId && entranceId;
+
   if (data?.cars.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <SafeAreaView className="flex-1 items-center justify-center">
         <Text className="text-4xl">No cars parked</Text>
-      </View>
+      </SafeAreaView>
     );
   }
+
   return (
-    <View className="flex-row">
-      <View className="mt-6  p-6 flex-row gap-4 w-[75%]">
-        {data?.cars.map((car: Car) => (
-          <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
-        ))}
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="bg-white">
+        <Text className="text-4xl font-bold text-center my-6">
+          SEARCH & ARRIVAL NAV
+        </Text>
+        <SidebarButton text="Search for a car" icon="search" />
+      </View>
+
+      <View className="flex-row ">
+        <View className="flex-1">
+          {data?.cars.map((car: Car) => (
+            <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
+          ))}
+        </View>
+
         <EditModal
           setModalVisible={setModalVisible}
           modalVisible={modalVisible}
         />
+
+        {sideBarPropsValid && (
+          <Sidebar
+            car={selectedCar}
+            locationId={locationId}
+            entranceId={entranceId}
+            setModalVisible={setModalVisible}
+            setSelectedCar={setSelectedCar}
+          />
+        )}
       </View>
-      {sideBarPropsValid && (
-        <Sidebar
-          car={selectedCar}
-          locationId={locationId}
-          entranceId={entranceId}
-          setModalVisible={setModalVisible}
-          setSelectedCar={setSelectedCar}
-        />
-      )}
-    </View>
+    </SafeAreaView>
   );
 }
