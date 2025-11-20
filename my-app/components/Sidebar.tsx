@@ -61,7 +61,7 @@ export default function Sidebar({
     },
   });
   return (
-    <View className=" w-full bg-white h-screen">
+    <View className="  bg-white h-screen  w-1/4">
       <View className="p-6  flex-row items-center gap-4">
         <Image
           source={require("@/assets/images/car.png")}

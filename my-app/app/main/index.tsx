@@ -48,11 +48,20 @@ export default function Main() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="bg-white">
-        <Text className="text-4xl font-bold text-center my-6">
-          SEARCH & ARRIVAL NAV
-        </Text>
-        <SidebarButton text="Search for a car" icon="search" />
+      <View className="bg-white ">
+        <View className=" w-1/4  flex-row self-end ">
+          <SidebarButton
+            text="Search"
+            icon="search"
+            onPress={() => console.log("pressed search")}
+          />
+
+          <SidebarButton
+            text="Arrival"
+            icon="arrival"
+            onPress={() => console.log("pressed arrival")}
+          />
+        </View>
       </View>
 
       <View className="flex-row ">
