@@ -62,8 +62,12 @@ export default function Sidebar({
   });
   return (
     <View className=" w-full bg-white h-screen">
-      <View className="p-6">
-        <Image source={require("@/assets/images/car.png")} />
+      <View className="p-6  flex-row items-center gap-4">
+        <Image
+          source={require("@/assets/images/car.png")}
+          className="bg-black"
+          style={{ width: 50, height: 50 }}
+        />
         <Text className="text-3xl">Car Details</Text>
       </View>
       <View className="p-6">
@@ -88,12 +92,12 @@ export default function Sidebar({
         <SidebarButton text="Request Car" icon="bell" />
         <SidebarButton
           text="Edit Details"
-          icon="bell"
+          icon="edit"
           onPress={() => setModalVisible((prev) => !prev)}
         />
         <SidebarButton
           text="Check Out"
-          icon="bell"
+          icon="check"
           onPress={() => {
             deleteCarMutation.mutate();
             setSelectedCar(null);
