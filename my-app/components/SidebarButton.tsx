@@ -5,6 +5,8 @@ const icons: Record<string, any> = {
   bell: require("@/assets/images/bell.png"),
   edit: require("@/assets/images/pencil.png"),
   check: require("@/assets/images/black-check.png"),
+  search: require("@/assets/images/search.png"),
+  arrival: require("@/assets/images/arrival.png"),
 };
 
 export default function SidebarButton({
