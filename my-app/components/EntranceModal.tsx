@@ -74,7 +74,7 @@ export function EntranceModal({
                 <Text
                   className=" text-5xl bg-[#F3F3F5] pl-9 py-3"
                   key={ent.name}
-                  onPress={() => selectEntrance(ent.name)}
+                  onPress={() => selectEntrance(ent.id.toString())}
                 >
                   {ent.name}
                 </Text>
