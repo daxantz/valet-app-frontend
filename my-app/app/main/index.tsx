@@ -8,6 +8,11 @@ import CarBox from "@/components/CarBox";
 import Sidebar from "@/components/Sidebar";
 import EditModal from "@/components/editModal";
 
+import SidebarButton from "@/components/SidebarButton";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Search from "@/components/Search";
+import useSearch from "@/lib/util/hooks/useSearch";
+
 async function fetchCars(locationId: string, entranceId: string) {
   try {
     const res = await fetch(
@@ -26,41 +31,80 @@ async function fetchCars(locationId: string, entranceId: string) {
 
 export default function Main() {
   const { selectedEntrance: entranceId, locationId } = useLocation();
-  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const { data } = useQuery({
     queryKey: ["cars"],
     queryFn: () => fetchCars(locationId!, entranceId!),
   });
-  console.log(modalVisible);
+  const {
+    searchedCars,
+    handleSearch,
+    query,
+    isSearching,
+    resetSearch,
+
+    searchByMake,
+  } = useSearch(data?.cars || []);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(data?.cars[0]);
   const sideBarPropsValid = selectedCar && locationId && entranceId;
+
   if (data?.cars.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <SafeAreaView className="flex-1 items-center justify-center">
         <Text className="text-4xl">No cars parked</Text>
-      </View>
+      </SafeAreaView>
     );
   }
+  console.log(searchedCars);
   return (
-    <View className="flex-row">
-      <View className="mt-6  p-6 flex-row gap-4 w-[75%]">
-        {data?.cars.map((car: Car) => (
-          <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
-        ))}
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="bg-white ">
+        <View className=" w-1/4  flex-row self-end ">
+          <SidebarButton text="Search" icon="search" onPress={resetSearch} />
+
+          <SidebarButton
+            text="Arrival"
+            icon="arrival"
+            onPress={() => console.log("pressed arrival")}
+          />
+        </View>
+      </View>
+
+      <View className="flex-row ">
+        <View className="flex-1 flex-row gap-6 flex-wrap">
+          {(isSearching && searchedCars ? searchedCars : data?.cars)?.map(
+            (car: Car) => (
+              <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
+            )
+          )}
+        </View>
+
         <EditModal
           setModalVisible={setModalVisible}
           modalVisible={modalVisible}
         />
+
+        {isSearching && (
+          <Search
+            query={query}
+            setQuery={handleSearch}
+            searchByMake={searchByMake}
+          />
+        )}
+        {sideBarPropsValid && !isSearching ? (
+          <Sidebar
+            car={selectedCar}
+            entranceId={entranceId}
+            locationId={locationId}
+            setModalVisible={setModalVisible}
+            setSelectedCar={setSelectedCar}
+          />
+        ) : (
+          !selectedCar &&
+          !isSearching && <Text className="text-4xl m-4">No car selected</Text>
+        )}
       </View>
-      {sideBarPropsValid && (
-        <Sidebar
-          car={selectedCar}
-          locationId={locationId}
-          entranceId={entranceId}
-          setModalVisible={setModalVisible}
-          setSelectedCar={setSelectedCar}
-        />
-      )}
-    </View>
+    </SafeAreaView>
   );
 }
