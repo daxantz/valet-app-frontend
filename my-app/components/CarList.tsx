@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import SidebarButton from "./SidebarButton";
 
 const carBrands = [
   "Acura",
@@ -51,15 +52,18 @@ const carBrands = [
 ];
 
 type CarBrandSelectProps = {
-  onSelectBrand: (brand: string) => void;
+  selectedBrand?: string;
+  setBrand: (brand: string) => void;
 };
 
-export default function CarBrandSelect({ onSelectBrand }: CarBrandSelectProps) {
-  const [selectedBrand, setSelectedBrand] = useState("");
+export default function CarBrandSelect({
+  setBrand,
+  selectedBrand,
+}: CarBrandSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const selectBrand = (brand: string) => {
-    setSelectedBrand(brand);
+    setBrand(brand);
     setIsOpen(false);
   };
 
@@ -96,7 +100,6 @@ export default function CarBrandSelect({ onSelectBrand }: CarBrandSelectProps) {
                     key={brand}
                     onPress={() => {
                       selectBrand(brand);
-                      onSelectBrand(brand);
                     }}
                     className={`p-3 border-b border-gray-100 ${selectedBrand === brand ? "bg-blue-50" : ""}`}
                   >
@@ -118,10 +121,18 @@ export default function CarBrandSelect({ onSelectBrand }: CarBrandSelectProps) {
 
         {selectedBrand !== "" && !isOpen && (
           <View className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <Text className="text-sm text-gray-600">Selected:</Text>
-            <Text className="text-lg font-medium text-blue-700">
-              {selectedBrand}
-            </Text>
+            <View className="flex-row items-center gap-4">
+              <Text className="text-lg text-gray-600">Selected:</Text>
+              <Text className="text-lg font-medium text-blue-700">
+                {selectedBrand}
+              </Text>
+            </View>
+
+            <SidebarButton
+              text="Reset"
+              icon="check"
+              onPress={() => setBrand("")}
+            />
           </View>
         )}
       </View>
