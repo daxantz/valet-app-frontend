@@ -3,16 +3,9 @@ import CarList from "./CarList";
 type SearchProps = {
   query: string;
   setQuery: (query: string) => void;
-
-  setBrand: (brand: string) => void;
-  selectedBrand?: string;
+  searchByMake: (make: string) => void;
 };
-export default function Search({
-  query,
-  setQuery,
-  setBrand,
-  selectedBrand,
-}: SearchProps) {
+export default function Search({ query, setQuery, searchByMake }: SearchProps) {
   return (
     <View className="  bg-white h-screen  w-1/4 ">
       <View className="p-6  flex-row items-center gap-4">
@@ -25,7 +18,7 @@ export default function Search({
         onChangeText={setQuery}
         value={query}
       />
-      <CarList setBrand={setBrand} selectedBrand={selectedBrand} />
+      <CarList onSelectBrand={searchByMake} />
     </View>
   );
 }
