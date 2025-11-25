@@ -38,13 +38,14 @@ export default function Main() {
     queryFn: () => fetchCars(locationId!, entranceId!),
   });
   const {
-    searchedCars,
+    // searchedCars,
+    filteredCars,
     handleSearch,
     query,
     isSearching,
     resetSearch,
-
-    searchByMake,
+    setBrand,
+    selectedBrand,
   } = useSearch(data?.cars || []);
   const [selectedCar, setSelectedCar] = useState<Car | null>(data?.cars[0]);
   const sideBarPropsValid = selectedCar && locationId && entranceId;
@@ -56,7 +57,7 @@ export default function Main() {
       </SafeAreaView>
     );
   }
-  console.log(searchedCars);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="bg-white ">
@@ -73,7 +74,7 @@ export default function Main() {
 
       <View className="flex-row ">
         <View className="flex-1 flex-row gap-6 flex-wrap">
-          {(isSearching && searchedCars ? searchedCars : data?.cars)?.map(
+          {(isSearching && filteredCars ? filteredCars : data?.cars)?.map(
             (car: Car) => (
               <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
             )
@@ -84,12 +85,12 @@ export default function Main() {
           setModalVisible={setModalVisible}
           modalVisible={modalVisible}
         />
-
         {isSearching && (
           <Search
             query={query}
             setQuery={handleSearch}
-            searchByMake={searchByMake}
+            setBrand={setBrand}
+            selectedBrand={selectedBrand}
           />
         )}
         {sideBarPropsValid && !isSearching ? (
