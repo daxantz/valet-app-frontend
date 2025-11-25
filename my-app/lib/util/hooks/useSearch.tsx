@@ -2,41 +2,51 @@ import { Car } from "@/types/types";
 import { useState } from "react";
 
 export default function useSearch(cars: Car[]) {
-  const [searchedCars, setSearchedCars] = useState<Car[]>([...cars]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState("");
   function handleSearch(query: string) {
     setQuery(query);
-    // filters based on last 4 digits of phone number or ticket
-    const filteredCars = cars.filter(
-      (car: Car) =>
-        car.phoneNumber.toLowerCase().includes(query.slice(-4).toLowerCase()) ||
-        car.ticket.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchedCars(filteredCars);
   }
+  function setBrand(brand: string) {
+    setSelectedBrand(brand);
+  }
+  // filtered cars derived from query and selectedBrand states
+  const filteredCars = (() => {
+    // If searching by make
+    if (selectedBrand) {
+      return cars.filter(
+        (car: Car) => car.make.toLowerCase() === selectedBrand.toLowerCase()
+      );
+    }
+
+    // If searching by query (phone/ticket)
+    if (query) {
+      return cars.filter(
+        (car: Car) =>
+          car.phoneNumber.slice(-4).includes(query.slice(-4)) ||
+          car.ticket.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    // No filters active - return all cars
+    return cars;
+  })();
   function resetSearch() {
     setIsSearching(!isSearching);
     setQuery("");
-    setSearchedCars([...cars]);
-  }
-
-  function searchByMake(make: string) {
-    const filteredCars = cars.filter(
-      (car: Car) => car.make.toLowerCase() === make.toLowerCase()
-    );
-    setSearchedCars(filteredCars);
+    setSelectedBrand("");
   }
 
   return {
-    searchedCars,
     handleSearch,
     query,
     setQuery,
-    setSearchedCars,
     isSearching,
     setIsSearching,
     resetSearch,
-    searchByMake,
+    filteredCars,
+    setBrand,
+    selectedBrand,
   };
 }
