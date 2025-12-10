@@ -13,9 +13,9 @@ const LoginScreen = () => {
   const [error, setError] = useState<any | null>(null);
   async function handleLogin(name: string) {
     // Implement login logic here
-    console.log(passcode);
+
     try {
-      const data = await fetch("http://localhost:3000/v1/login/", {
+      const data = await fetch("http://192.168.1.15:3000/v1/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,6 @@ const LoginScreen = () => {
       </View>
 
       <TextInput
-        keyboardType="number-pad"
         className="w-[80%] border border-gray-400 rounded-md py-6 mt-5"
         onChangeText={setPasscode}
       />

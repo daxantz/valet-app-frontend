@@ -12,7 +12,7 @@ interface EntranceModalProps {
 async function fetchEntrances(locationId: string) {
   try {
     const res = await fetch(
-      `http://localhost:3000/v1/location/${locationId}/entrance/`,
+      `http://192.168.1.15:3000/v1/location/${locationId}/entrance/`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
