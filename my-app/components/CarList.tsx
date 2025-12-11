@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import SidebarButton from "./SidebarButton";
-
+import * as Device from "expo-device";
+import { DeviceType } from "expo-device";
 const carBrands = [
   "Acura",
   "Alfa Romeo",
@@ -61,6 +62,7 @@ export default function CarBrandSelect({
   selectedBrand,
 }: CarBrandSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const isPhone = Device.deviceType === DeviceType.PHONE;
 
   const selectBrand = (brand: string) => {
     setBrand(brand);
@@ -68,10 +70,10 @@ export default function CarBrandSelect({
   };
 
   return (
-    <View className="flex-1  p-4">
+    <View className="flex-1  ">
       <View className="bg-white rounded-xl p-5">
-        <Text className="text-xl font-semibold text-gray-800 mb-4">
-          Vehicle Check-In
+        <Text className="text-xl font-semibold text-gray-800  h-10">
+          Search by Make
         </Text>
 
         <Text className="text-sm font-medium text-gray-700 mb-2">
@@ -83,7 +85,9 @@ export default function CarBrandSelect({
             onPress={() => setIsOpen(!isOpen)}
             className="border border-gray-300 rounded-lg p-4 flex-row justify-between items-center bg-white"
           >
-            <Text className={selectedBrand ? "text-gray-900" : "text-gray-400"}>
+            <Text
+              className={`${selectedBrand ? "text-gray-900" : "text-gray-400"} ${isPhone && "h-5"}`}
+            >
               {selectedBrand || "Select a brand..."}
             </Text>
             <Text className="text-gray-400">{isOpen ? "▲" : "▼"}</Text>
@@ -91,8 +95,8 @@ export default function CarBrandSelect({
 
           {isOpen && (
             <View
-              className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1"
-              style={{ height: 250 }}
+              className="absolute top-7 left-0 right-0 bg-white border border-gray-300 rounded-lg mt-2"
+              style={{ height: 150 }}
             >
               <ScrollView nestedScrollEnabled={true}>
                 {carBrands.map((brand) => (
@@ -120,9 +124,11 @@ export default function CarBrandSelect({
         </View>
 
         {selectedBrand !== "" && !isOpen && (
-          <View className="mt-4 p-3 bg-blue-50 rounded-lg">
+          <View
+            className={`mt-4 p-3  bg-blue-50 rounded-lg ${isPhone && "h-48 mt-10"}`}
+          >
             <View className="flex-row items-center gap-4">
-              <Text className="text-lg text-gray-600">Selected:</Text>
+              <Text className="text-lg text-gray-600 ">Selected:</Text>
               <Text className="text-lg font-medium text-blue-700">
                 {selectedBrand}
               </Text>
