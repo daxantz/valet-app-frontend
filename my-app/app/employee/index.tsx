@@ -17,10 +17,10 @@ const EmployeeLoginScreen = () => {
 
   async function handleLogin(pin: string) {
     // Implement login logic here
-    console.log(passcode);
+
     try {
       const data = await fetch(
-        `http://localhost:3000/v1/location/${locationId}/auth/login`,
+        `http://192.168.1.15:3000/v1/location/${locationId}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -31,7 +31,6 @@ const EmployeeLoginScreen = () => {
           body: JSON.stringify({ pin }),
         }
       );
-      console.log(token);
 
       const res: LoginResponse = await data.json();
       if (res.error) {

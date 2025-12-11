@@ -37,6 +37,7 @@ type SidebarProps = {
   entranceId: string;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCar: React.Dispatch<React.SetStateAction<Car | null>>;
+  isSearching?: boolean;
 };
 
 export default function Sidebar({
@@ -45,6 +46,7 @@ export default function Sidebar({
   entranceId,
   setModalVisible,
   setSelectedCar,
+  isSearching,
 }: SidebarProps) {
   const queryClient = useQueryClient();
 
@@ -60,6 +62,15 @@ export default function Sidebar({
       console.error("❌ Failed to delete car:", error);
     },
   });
+
+  if (!car && !isSearching) {
+    return (
+      <Text className="text-4xl m-4 border border-blue-500">
+        No car selected
+      </Text>
+    );
+  }
+
   return (
     <View className="  bg-white h-screen  w-1/4">
       <View className="p-6  flex-row items-center gap-4">

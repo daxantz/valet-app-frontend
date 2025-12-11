@@ -3,20 +3,23 @@ import { Car } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { Text, View } from "react-native";
+import { ScrollView, Text, useWindowDimensions, View } from "react-native";
 import CarBox from "@/components/CarBox";
 import Sidebar from "@/components/Sidebar";
-import EditModal from "@/components/editModal";
+import EditModal from "@/components/CarDetailsModal";
 
 import SidebarButton from "@/components/SidebarButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Search from "@/components/Search";
-import useSearch from "@/lib/util/hooks/useSearch";
+import useSearch from "@/hooks/useSearch";
+import * as Device from "expo-device";
+import { DeviceType } from "expo-device";
+import MobileNavigation from "@/components/MobileNavigation";
 
 async function fetchCars(locationId: string, entranceId: string) {
   try {
     const res = await fetch(
-      `http://localhost:3000/v1/location/${locationId}/entrance/${entranceId}/car/`
+      `http://192.168.1.15:3000/v1/location/${locationId}/entrance/${entranceId}/car/`
     );
     if (!res.ok) {
       throw new Error("Failed to fetch car data");
@@ -30,9 +33,14 @@ async function fetchCars(locationId: string, entranceId: string) {
 }
 
 export default function Main() {
-  const { selectedEntrance: entranceId, locationId } = useLocation();
+  const { selectedEntrance: entranceId, locationId, isShowing } = useLocation();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isTablet = Device.deviceType === DeviceType.TABLET;
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const isPortrait = !isLandscape;
   const { data } = useQuery({
     queryKey: ["cars"],
     queryFn: () => fetchCars(locationId!, entranceId!),
@@ -46,9 +54,26 @@ export default function Main() {
     resetSearch,
     setBrand,
     selectedBrand,
+    startSearch,
   } = useSearch(data?.cars || []);
   const [selectedCar, setSelectedCar] = useState<Car | null>(data?.cars[0]);
+  // const [image, setImage] = useState<string | undefined>(undefined);
   const sideBarPropsValid = selectedCar && locationId && entranceId;
+
+  // async function takePhoto() {
+  //   let permission = await ImagePicker.requestCameraPermissionsAsync();
+  //   let result = await ImagePicker.launchCameraAsync({
+  //     allowsEditing: false,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
+  //   if (!permission.granted) {
+  //     alert("Camera permission is required to take photos.");
+  //     return;
+  //   } else if (result.assets) {
+  //     setImage(result?.assets[0]?.uri);
+  //   }
+  // }
 
   if (data?.cars.length === 0) {
     return (
@@ -61,31 +86,56 @@ export default function Main() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="bg-white ">
-        <View className=" w-1/4  flex-row self-end ">
-          <SidebarButton text="Search" icon="search" onPress={resetSearch} />
+        <View
+          className={`   flex-row  ${Device.deviceType === DeviceType.TABLET && "self-end  p-4"}  justify-around `}
+        >
+          <SidebarButton text="Search" icon="search" onPress={startSearch} />
 
           <SidebarButton
             text="Arrival"
             icon="arrival"
-            onPress={() => console.log("pressed arrival")}
+            // onPress={() => takePhoto()}
           />
         </View>
       </View>
 
       <View className="flex-row ">
-        <View className="flex-1 flex-row gap-6 flex-wrap">
-          {(isSearching && filteredCars ? filteredCars : data?.cars)?.map(
-            (car: Car) => (
-              <CarBox key={car.id} car={car} setSelectedCar={setSelectedCar} />
-            )
-          )}
-        </View>
+        <ScrollView className={`flex-1 p-0   ${isShowing ? "h-80" : "h-full"}`}>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              columnGap: 2,
+              paddingHorizontal: 3,
+              rowGap: 10,
+            }}
+          >
+            {(isSearching && filteredCars ? filteredCars : data?.cars)?.map(
+              (item: Car) => (
+                <CarBox
+                  key={item.id}
+                  car={item}
+                  setSelectedCar={setSelectedCar}
+                  resetSearch={resetSearch}
+                />
+              )
+            )}
+          </View>
+        </ScrollView>
 
+        <EditModal
+          mode="create"
+          setModalVisible={setCreateModalVisible}
+          modalVisible={createModalVisible}
+        />
         <EditModal
           setModalVisible={setModalVisible}
           modalVisible={modalVisible}
+          mode="edit"
+          initialValues={selectedCar}
         />
-        {isSearching && (
+        {isSearching && isTablet && (
           <Search
             query={query}
             setQuery={handleSearch}
@@ -93,19 +143,27 @@ export default function Main() {
             selectedBrand={selectedBrand}
           />
         )}
-        {sideBarPropsValid && !isSearching ? (
+        {sideBarPropsValid && !isSearching && isTablet && isLandscape && (
           <Sidebar
             car={selectedCar}
             entranceId={entranceId}
             locationId={locationId}
             setModalVisible={setModalVisible}
             setSelectedCar={setSelectedCar}
+            isSearching={isSearching}
           />
-        ) : (
-          !selectedCar &&
-          !isSearching && <Text className="text-4xl m-4">No car selected</Text>
         )}
       </View>
+      {isShowing && isPortrait && (
+        <MobileNavigation
+          car={selectedCar}
+          isSearching={isSearching}
+          query={query}
+          setQuery={handleSearch}
+          setBrand={setBrand}
+          selectedBrand={selectedBrand}
+        />
+      )}
     </SafeAreaView>
   );
 }

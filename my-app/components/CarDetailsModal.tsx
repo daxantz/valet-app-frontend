@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { Car } from "@/types/types";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,19 +10,50 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+type CarData = {
+  ticketNumber: string;
+  phoneNumber: string;
+  carMake: string;
+  color: string;
+};
+
 type ParkCarModalProps = {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
+
+  mode: "create" | "edit"; // NEW
+  initialValues?: Car | null; // NEW
+  onCreate?: (data: CarData) => void; // NEW
+  onUpdate?: (data: CarData) => void; // NEW
 };
 
 export default function ParkCarModal({
   modalVisible,
   setModalVisible,
+  mode,
+  initialValues = null,
+  onCreate,
+  onUpdate,
 }: ParkCarModalProps) {
-  const [ticketNumber, setTicketNumber] = useState("1234");
-  const [phoneNumber, setPhoneNumber] = useState("555-0123");
+  const [ticketNumber, setTicketNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [carMake, setCarMake] = useState("");
   const [color, setColor] = useState("");
+
+  // Load initial values in edit mode
+  useEffect(() => {
+    if (mode === "edit" && initialValues) {
+      setTicketNumber(initialValues.ticket);
+      setPhoneNumber(initialValues.phoneNumber);
+      setCarMake(initialValues.make);
+      setColor(initialValues.color);
+    } else if (mode === "create") {
+      setTicketNumber("");
+      setPhoneNumber("");
+      setCarMake("");
+      setColor("");
+    }
+  }, [mode, initialValues, modalVisible]);
 
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
@@ -31,11 +63,52 @@ export default function ParkCarModal({
     "Honda",
     "Ford",
     "Chevrolet",
-    "Tesla",
+    "Nissan",
     "BMW",
-    "Mercedes",
+    "Mercedes-Benz",
+    "Volkswagen",
+    "Hyundai",
+    "Kia",
+    "Audi",
+    "Lexus",
+    "Subaru",
+    "Mazda",
+    "Tesla",
+    "Jeep",
+    "Dodge",
+    "Volvo",
+    "Porsche",
+    "GMC",
   ];
-  const colors = ["Black", "White", "Silver", "Red", "Blue", "Gray", "Green"];
+
+  const colors = [
+    "Black",
+    "White",
+    "Silver",
+    "Red",
+    "Blue",
+    "Gray",
+    "Green",
+    "Yellow",
+    "Orange",
+    "Brown",
+    "Purple",
+    "Tan",
+  ];
+
+  function handleSubmit() {
+    const data: CarData = {
+      ticketNumber,
+      phoneNumber,
+      carMake,
+      color,
+    };
+
+    if (mode === "create" && onCreate) onCreate(data);
+    if (mode === "edit" && onUpdate) onUpdate(data);
+
+    setModalVisible(false);
+  }
 
   return (
     <Modal
@@ -52,17 +125,19 @@ export default function ParkCarModal({
           className="bg-white rounded-xl"
           style={{
             width: isLandscape ? "75%" : "90%",
-            maxWidth: isLandscape ? 700 : 450,
+            maxWidth: isLandscape ? 700 : 600,
           }}
         >
           <ScrollView style={{ maxHeight: isLandscape ? height * 0.85 : 600 }}>
             <View className="p-6">
               {/* Header */}
               <Text className="text-xl font-bold text-gray-900 mb-1">
-                Park New Car
+                {mode === "create" ? "Park New Car" : "Edit Car"}
               </Text>
               <Text className="text-sm text-gray-500 mb-6">
-                Enter the vehicle details to park a new car
+                {mode === "create"
+                  ? "Enter the vehicle details to park a new car"
+                  : "Update the car details"}
               </Text>
 
               {/* Ticket Number */}
@@ -71,12 +146,13 @@ export default function ParkCarModal({
                   Ticket Number (4 digits)
                 </Text>
                 <TextInput
-                  className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+                  className={`border border-gray-300 rounded-lg px-4 py-3 text-base ${mode === "edit" ? "bg-gray-100 text-gray-600" : ""}`}
                   value={ticketNumber}
                   onChangeText={setTicketNumber}
                   keyboardType="numeric"
                   maxLength={4}
                   placeholder="1234"
+                  editable={mode === "create"}
                 />
               </View>
 
@@ -86,11 +162,12 @@ export default function ParkCarModal({
                   Phone Number
                 </Text>
                 <TextInput
-                  className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+                  className={`border border-gray-300 rounded-lg px-4 py-3 text-base ${mode === "edit" ? "bg-gray-100 text-gray-600" : ""}`}
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                   keyboardType="phone-pad"
                   placeholder="555-0123"
+                  editable={mode === "create"}
                 />
               </View>
 
@@ -107,8 +184,8 @@ export default function ParkCarModal({
                     {carMake || "Select a brand"}
                   </Text>
                 </View>
-                {/* Car make chips */}
-                <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+
+                <View className="flex-row flex-wrap gap-2">
                   {carMakes.map((make) => (
                     <TouchableOpacity
                       key={make}
@@ -146,8 +223,8 @@ export default function ParkCarModal({
                     {color || "Select a color"}
                   </Text>
                 </View>
-                {/* Color chips */}
-                <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+
+                <View className="flex-row flex-wrap gap-2">
                   {colors.map((col) => (
                     <TouchableOpacity
                       key={col}
@@ -172,7 +249,7 @@ export default function ParkCarModal({
                 </View>
               </View>
 
-              {/* Car Photo */}
+              {/* Car Photo (same as before) */}
               <View className="mb-6">
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Car Photo (Optional)
@@ -184,7 +261,7 @@ export default function ParkCarModal({
               </View>
 
               {/* Buttons */}
-              <View className="flex-row" style={{ gap: 12 }}>
+              <View className="flex-row gap-3">
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
                   className="flex-1 py-3 rounded-lg border border-gray-300 bg-white"
@@ -193,15 +270,13 @@ export default function ParkCarModal({
                     Cancel
                   </Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                  onPress={() => {
-                    console.log({ ticketNumber, phoneNumber, carMake, color });
-                    setModalVisible(false);
-                  }}
+                  onPress={handleSubmit}
                   className="flex-1 py-3 rounded-lg bg-black"
                 >
                   <Text className="text-center text-base font-semibold text-white">
-                    Park Car
+                    {mode === "create" ? "Park Car" : "Save Changes"}
                   </Text>
                 </TouchableOpacity>
               </View>

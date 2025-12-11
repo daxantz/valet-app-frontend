@@ -1,5 +1,5 @@
 // LocationContext.tsx
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 
 interface LocationContextProps {
   locationId: string | null;
@@ -8,6 +8,8 @@ interface LocationContextProps {
   setToken: (token: string) => void;
   selectedEntrance: string | null;
   setSelectedEntrance: (name: string) => void;
+  isShowing: boolean;
+  setIsShowing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const LocationContext = createContext<LocationContextProps | undefined>(
@@ -18,6 +20,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [locationId, setLocationId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [selectedEntrance, setSelectedEntrance] = useState<string | null>(null);
+  //move to another file , it's not location specific
+  const [isShowing, setIsShowing] = useState(false);
 
   return (
     <LocationContext.Provider
@@ -28,6 +32,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         setToken,
         selectedEntrance,
         setSelectedEntrance,
+        isShowing,
+        setIsShowing,
       }}
     >
       {children}

@@ -33,11 +33,13 @@ export default function useSearch(cars: Car[]) {
     return cars;
   })();
   function resetSearch() {
-    setIsSearching(!isSearching);
+    setIsSearching(false);
     setQuery("");
     setSelectedBrand("");
   }
-
+  function startSearch() {
+    setIsSearching((prev) => !prev);
+  }
   return {
     handleSearch,
     query,
@@ -48,5 +50,6 @@ export default function useSearch(cars: Car[]) {
     filteredCars,
     setBrand,
     selectedBrand,
+    startSearch,
   };
 }
