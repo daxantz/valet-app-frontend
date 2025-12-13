@@ -16,8 +16,6 @@ export default function CarBox({
   const [elapsed, setElapsed] = useState(getShortElapsed(car.createdAt));
   const { setIsShowing } = useLocation();
 
-  console.log(car.createdAt.split("T")[0]);
-  console.log(elapsed);
   useEffect(() => {
     const interval = setInterval(() => {
       setElapsed(getShortElapsed(car.createdAt));
