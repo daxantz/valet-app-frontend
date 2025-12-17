@@ -12,7 +12,7 @@ async function deleteCar(
   try {
     console.log("Deleting car", { locationId, entranceId, carId });
     const res = await fetch(
-      `http://localhost:3000/v1/location/${locationId}/entrance/${entranceId}/car/${carId}`,
+      `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/entrance/${entranceId}/car/${carId}`,
       {
         method: "DELETE",
       }

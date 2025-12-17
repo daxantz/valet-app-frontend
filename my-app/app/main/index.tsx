@@ -15,11 +15,12 @@ import useSearch from "@/hooks/useSearch";
 import * as Device from "expo-device";
 import { DeviceType } from "expo-device";
 import MobileNavigation from "@/components/MobileNavigation";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 async function fetchCars(locationId: string, entranceId: string) {
   try {
     const res = await fetch(
-      `http://192.168.1.15:3000/v1/location/${locationId}/entrance/${entranceId}/car/`
+      `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/entrance/${entranceId}/car/`
     );
     if (!res.ok) {
       throw new Error("Failed to fetch car data");
@@ -45,6 +46,7 @@ export default function Main() {
     queryKey: ["cars"],
     queryFn: () => fetchCars(locationId!, entranceId!),
   });
+
   const {
     // searchedCars,
     filteredCars,
@@ -57,23 +59,8 @@ export default function Main() {
     startSearch,
   } = useSearch(data?.cars || []);
   const [selectedCar, setSelectedCar] = useState<Car | null>(data?.cars[0]);
-  // const [image, setImage] = useState<string | undefined>(undefined);
-  const sideBarPropsValid = selectedCar && locationId && entranceId;
 
-  // async function takePhoto() {
-  //   let permission = await ImagePicker.requestCameraPermissionsAsync();
-  //   let result = await ImagePicker.launchCameraAsync({
-  //     allowsEditing: false,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-  //   if (!permission.granted) {
-  //     alert("Camera permission is required to take photos.");
-  //     return;
-  //   } else if (result.assets) {
-  //     setImage(result?.assets[0]?.uri);
-  //   }
-  // }
+  const sideBarPropsValid = selectedCar && locationId && entranceId;
 
   if (data?.cars.length === 0) {
     return (
@@ -94,7 +81,7 @@ export default function Main() {
           <SidebarButton
             text="Arrival"
             icon="arrival"
-            // onPress={() => takePhoto()}
+            onPress={() => setCreateModalVisible(true)}
           />
         </View>
       </View>

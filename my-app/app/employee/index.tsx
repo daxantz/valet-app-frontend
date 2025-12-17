@@ -20,7 +20,7 @@ const EmployeeLoginScreen = () => {
 
     try {
       const data = await fetch(
-        `http://192.168.1.15:3000/v1/location/${locationId}/auth/login`,
+        `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/auth/login`,
         {
           method: "POST",
           headers: {

@@ -25,7 +25,7 @@ export default async function handleCreateCar(
       });
     }
     const res = await fetch(
-      `http://192.168.1.31:3000/v1/location/${locationId}/entrance/${selectedEntrance}/car/`,
+      `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/entrance/${selectedEntrance}/car/`,
       {
         method: "POST",
         credentials: "include",
