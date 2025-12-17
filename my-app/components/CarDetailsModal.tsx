@@ -1,4 +1,8 @@
+import { useLocation } from "@/context/LocationContext";
+import usePhotos from "@/hooks/usePhotos";
 import { Car } from "@/types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Image } from "expo-image";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -9,12 +13,13 @@ import {
   ScrollView,
   useWindowDimensions,
 } from "react-native";
-
+import handleCreateCar from "@/lib/util/createCar";
 type CarData = {
-  ticketNumber: string;
+  ticket: string;
   phoneNumber: string;
-  carMake: string;
+  make: string;
   color: string;
+  photos?: string[];
 };
 
 type ParkCarModalProps = {
@@ -35,22 +40,32 @@ export default function ParkCarModal({
   onCreate,
   onUpdate,
 }: ParkCarModalProps) {
-  const [ticketNumber, setTicketNumber] = useState("");
+  const [ticket, setTicket] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [carMake, setCarMake] = useState("");
+  const [make, setMake] = useState("");
   const [color, setColor] = useState("");
+  const { photos, takePhoto, clearPhotos } = usePhotos();
+  const { locationId, selectedEntrance } = useLocation();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (carData: CarData) =>
+      handleCreateCar(carData, locationId!, selectedEntrance!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cars"] });
+    },
+  });
 
   // Load initial values in edit mode
   useEffect(() => {
     if (mode === "edit" && initialValues) {
-      setTicketNumber(initialValues.ticket);
+      setTicket(initialValues.ticket);
       setPhoneNumber(initialValues.phoneNumber);
-      setCarMake(initialValues.make);
+      setMake(initialValues.make);
       setColor(initialValues.color);
     } else if (mode === "create") {
-      setTicketNumber("");
+      setTicket("");
       setPhoneNumber("");
-      setCarMake("");
+      setMake("");
       setColor("");
     }
   }, [mode, initialValues, modalVisible]);
@@ -98,16 +113,23 @@ export default function ParkCarModal({
 
   function handleSubmit() {
     const data: CarData = {
-      ticketNumber,
+      ticket,
       phoneNumber,
-      carMake,
+      make,
       color,
+      photos,
     };
-
-    if (mode === "create" && onCreate) onCreate(data);
+    console.log("Submitting car data:", photos);
+    if (mode === "create") mutate(data);
     if (mode === "edit" && onUpdate) onUpdate(data);
 
     setModalVisible(false);
+    clearPhotos();
+  }
+
+  function cancelForm() {
+    setModalVisible(false);
+    clearPhotos();
   }
 
   return (
@@ -147,8 +169,8 @@ export default function ParkCarModal({
                 </Text>
                 <TextInput
                   className={`border border-gray-300 rounded-lg px-4 py-3 text-base ${mode === "edit" ? "bg-gray-100 text-gray-600" : ""}`}
-                  value={ticketNumber}
-                  onChangeText={setTicketNumber}
+                  value={ticket}
+                  onChangeText={setTicket}
                   keyboardType="numeric"
                   maxLength={4}
                   placeholder="1234"
@@ -179,9 +201,9 @@ export default function ParkCarModal({
                 <View className="border border-gray-300 rounded-lg px-4 py-3 mb-2">
                   <Text
                     className="text-base"
-                    style={{ color: carMake ? "#000" : "#9CA3AF" }}
+                    style={{ color: make ? "#000" : "#9CA3AF" }}
                   >
-                    {carMake || "Select a brand"}
+                    {make || "Select a brand"}
                   </Text>
                 </View>
 
@@ -189,16 +211,16 @@ export default function ParkCarModal({
                   {carMakes.map((make) => (
                     <TouchableOpacity
                       key={make}
-                      onPress={() => setCarMake(make)}
+                      onPress={() => setMake(make)}
                       className={`px-4 py-2 rounded-md border ${
-                        carMake === make
+                        make === make
                           ? "bg-blue-500 border-blue-500"
                           : "bg-white border-gray-200"
                       }`}
                     >
                       <Text
                         className={`text-sm ${
-                          carMake === make
+                          make === make
                             ? "text-white font-semibold"
                             : "text-gray-700"
                         }`}
@@ -254,16 +276,33 @@ export default function ParkCarModal({
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Car Photo (Optional)
                 </Text>
-                <TouchableOpacity className="border-2 border-dashed border-gray-300 rounded-lg py-8 items-center justify-center bg-gray-50">
+                <TouchableOpacity
+                  onPress={takePhoto}
+                  className="border-2 border-dashed border-gray-300 rounded-lg py-8 items-center justify-center bg-gray-50"
+                >
                   <Text className="text-3xl mb-2">📷</Text>
                   <Text className="text-sm text-gray-500">Open Camera</Text>
                 </TouchableOpacity>
+              </View>
+              <View className="flex flex-row gap-2 flex-wrap justify-center">
+                {photos.map((uri) => (
+                  <Image
+                    key={uri}
+                    source={{ uri: uri }}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      marginBottom: 10,
+                      borderRadius: 8,
+                    }}
+                  />
+                ))}
               </View>
 
               {/* Buttons */}
               <View className="flex-row gap-3">
                 <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
+                  onPress={cancelForm}
                   className="flex-1 py-3 rounded-lg border border-gray-300 bg-white"
                 >
                   <Text className="text-center text-base font-semibold text-gray-700">

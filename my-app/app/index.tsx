@@ -15,7 +15,7 @@ const LoginScreen = () => {
     // Implement login logic here
 
     try {
-      const data = await fetch("http://192.168.1.15:3000/v1/login", {
+      const data = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/v1/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
