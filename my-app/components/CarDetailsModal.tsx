@@ -44,6 +44,7 @@ export default function ParkCarModal({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [make, setMake] = useState("");
   const [color, setColor] = useState("");
+
   const { photos, takePhoto, clearPhotos } = usePhotos();
   const { locationId, selectedEntrance } = useLocation();
   const queryClient = useQueryClient();
@@ -54,7 +55,7 @@ export default function ParkCarModal({
       queryClient.invalidateQueries({ queryKey: ["cars"] });
     },
   });
-
+  const awsImages = initialValues?.images.map((img) => img.url).flat();
   // Load initial values in edit mode
   useEffect(() => {
     if (mode === "edit" && initialValues) {
@@ -285,10 +286,11 @@ export default function ParkCarModal({
                 </TouchableOpacity>
               </View>
               <View className="flex flex-row gap-2 flex-wrap justify-center">
-                {photos.map((uri) => (
+                {(mode === "create" ? photos : awsImages)?.map((uri) => (
                   <Image
                     key={uri}
-                    source={{ uri: uri }}
+                    source={{ uri }}
+                    contentFit="cover"
                     style={{
                       width: 100,
                       height: 100,
