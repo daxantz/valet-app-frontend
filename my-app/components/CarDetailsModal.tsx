@@ -14,6 +14,8 @@ import {
   useWindowDimensions,
 } from "react-native";
 import handleCreateCar from "@/lib/util/createCar";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import sendSms from "@/lib/util/sendSms";
 type CarData = {
   ticket: string;
   phoneNumber: string;
@@ -44,7 +46,7 @@ export default function ParkCarModal({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [make, setMake] = useState("");
   const [color, setColor] = useState("");
-
+  const [msgSent, setMsgSent] = useState(false);
   const { photos, takePhoto, clearPhotos } = usePhotos();
   const { locationId, selectedEntrance } = useLocation();
   const queryClient = useQueryClient();
@@ -126,11 +128,18 @@ export default function ParkCarModal({
 
     setModalVisible(false);
     clearPhotos();
+    setMsgSent(false);
   }
 
   function cancelForm() {
     setModalVisible(false);
     clearPhotos();
+    setMsgSent(false);
+  }
+
+  function handleMsgSent(ticket: string) {
+    if (locationId) sendSms(ticket, locationId);
+    setMsgSent(true);
   }
 
   return (
@@ -184,14 +193,27 @@ export default function ParkCarModal({
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Phone Number
                 </Text>
-                <TextInput
-                  className={`border border-gray-300 rounded-lg px-4 py-3 text-base ${mode === "edit" ? "bg-gray-100 text-gray-600" : ""}`}
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                  keyboardType="phone-pad"
-                  placeholder="555-0123"
-                  editable={mode === "create"}
-                />
+                <View className="flex-row gap-2">
+                  <TextInput
+                    className={`border border-gray-300 rounded-lg px-4 py-3 text-base flex-1 ${mode === "edit" ? "bg-gray-100 text-gray-600" : ""}`}
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    keyboardType="phone-pad"
+                    placeholder="555-0123"
+                    editable={mode === "create"}
+                  />
+                  <TouchableOpacity
+                    className="self-center  p-2"
+                    disabled={!phoneNumber}
+                    onPress={() => handleMsgSent(ticket)}
+                  >
+                    <MaterialIcons
+                      name="sms"
+                      size={30}
+                      color={`${msgSent ? "green" : "red"}`}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {/* Car Make */}
