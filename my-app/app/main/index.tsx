@@ -15,7 +15,6 @@ import useSearch from "@/hooks/useSearch";
 import * as Device from "expo-device";
 import { DeviceType } from "expo-device";
 import MobileNavigation from "@/components/MobileNavigation";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 async function fetchCars(locationId: string, entranceId: string) {
   try {
@@ -149,6 +148,7 @@ export default function Main() {
           setQuery={handleSearch}
           setBrand={setBrand}
           selectedBrand={selectedBrand}
+          setModalVisible={setModalVisible}
         />
       )}
     </SafeAreaView>
