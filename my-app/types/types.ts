@@ -22,4 +22,5 @@ export type Car = {
   createdAt: string;
   make: string;
   color: string;
+  images: { carId: number; url: string[]; createdAt: string }[];
 };

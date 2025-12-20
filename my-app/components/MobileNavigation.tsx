@@ -4,9 +4,11 @@ import { Car } from "@/types/types";
 import { X } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import Search, { SearchProps } from "./Search";
+
 type MobileNavigationProps = {
   car?: Car | null;
   isSearching: boolean;
+  setModalVisible?: React.Dispatch<React.SetStateAction<boolean>>;
 } & SearchProps;
 export default function MobileNavigation({
   car,
@@ -15,6 +17,7 @@ export default function MobileNavigation({
   setQuery,
   setBrand,
   selectedBrand,
+  setModalVisible,
 }: MobileNavigationProps) {
   const { setIsShowing } = useLocation();
   return (
@@ -58,13 +61,19 @@ export default function MobileNavigation({
 
           <View className="mt-4 flex-row justify-end gap-2">
             <TouchableOpacity className="border border-gray-400 rounded-xl p-2 flex-1 items-center justify-center">
-              <Text className="font-medium text-lgl">Checkout</Text>
+              <Text className="font-medium text-lg">Checkout</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="border border-gray-400 rounded-xl p-2 flex-1 items-center justify-center">
-              <Text className="font-medium text-lgl">Edit Details</Text>
+            <TouchableOpacity
+              className="border border-gray-400 rounded-xl p-2 flex-1 items-center justify-center"
+              onPress={() =>
+                setModalVisible && setModalVisible((prev) => !prev)
+              }
+            >
+              <Text className="font-medium text-lg">Edit Details</Text>
             </TouchableOpacity>
+
             <TouchableOpacity className="border border-gray-400 rounded-xl p-2 flex-1 items-center justify-center">
-              <Text className="font-medium text-lgl">Request Car</Text>
+              <Text className="font-medium text-lg">Request Car</Text>
             </TouchableOpacity>
           </View>
         </>
