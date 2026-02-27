@@ -16,7 +16,7 @@ export default function Search({
 }: SearchProps) {
   return (
     <View
-      className={`bg-white   ${Device.deviceType === DeviceType.TABLET && " w-1/4 h-screen "}`}
+      className={`bg-white ${Device.deviceType === DeviceType.TABLET ? "flex-1 w-1/4" : ""}`}
     >
       <View className="p-6  flex-row items-center gap-4">
         <Text

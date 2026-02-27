@@ -3,23 +3,26 @@ import { Car } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { ScrollView, Text, useWindowDimensions, View } from "react-native";
 import CarBox from "@/components/CarBox";
-import Sidebar from "@/components/Sidebar";
 import EditModal from "@/components/CarDetailsModal";
+import Sidebar from "@/components/Sidebar";
+import { ScrollView, Text, useWindowDimensions, View } from "react-native";
 
-import SidebarButton from "@/components/SidebarButton";
-import { SafeAreaView } from "react-native-safe-area-context";
+import MobileNavigation from "@/components/MobileNavigation";
 import Search from "@/components/Search";
+import SidebarButton from "@/components/SidebarButton";
 import useSearch from "@/hooks/useSearch";
 import * as Device from "expo-device";
 import { DeviceType } from "expo-device";
-import MobileNavigation from "@/components/MobileNavigation";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const PADDING = 12;
+const GAP = 8;
 
 async function fetchCars(locationId: string, entranceId: string) {
   try {
     const res = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/entrance/${entranceId}/car/`
+      `${process.env.EXPO_PUBLIC_API_URL}/v1/location/${locationId}/entrance/${entranceId}/car/`,
     );
     if (!res.ok) {
       throw new Error("Failed to fetch car data");
@@ -40,6 +43,7 @@ export default function Main() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [carAreaWidth, setCarAreaWidth] = useState(width);
   const isPortrait = !isLandscape;
   const { data } = useQuery({
     queryKey: ["cars"],
@@ -61,40 +65,63 @@ export default function Main() {
 
   const sideBarPropsValid = selectedCar && locationId && entranceId;
 
+  const showSidebar = !!(
+    sideBarPropsValid &&
+    !isSearching &&
+    isTablet &&
+    isLandscape
+  );
+  const showSearchPanel = !!(isSearching && isTablet);
+  const numColumns =
+    carAreaWidth < 420
+      ? 2
+      : carAreaWidth < 680
+        ? 3
+        : carAreaWidth < 960
+          ? 4
+          : 5;
+  const cardWidth =
+    (carAreaWidth - PADDING * 2 - GAP * (numColumns - 1)) / numColumns;
+
   if (data?.cars.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
+      <SafeAreaView className="flex-1 items-center justify-center" edges={["bottom", "left", "right"]}>
         <Text className="text-4xl">No cars parked</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="bg-white ">
-        <View
-          className={`   flex-row  ${Device.deviceType === DeviceType.TABLET && "self-end  p-4"}  justify-around `}
-        >
-          <SidebarButton text="Search" icon="search" onPress={startSearch} />
-
+    <SafeAreaView className="flex-1 bg-white" edges={["bottom", "left", "right"]}>
+      <View className="bg-white">
+        <View className="flex-row justify-end px-4 py-3">
+          <SidebarButton
+            text="Search"
+            icon="search"
+            onPress={startSearch}
+            size={isTablet ? "lg" : "sm"}
+          />
           <SidebarButton
             text="Arrival"
             icon="arrival"
             onPress={() => setCreateModalVisible(true)}
+            size={isTablet ? "lg" : "sm"}
           />
         </View>
       </View>
 
-      <View className="flex-row ">
-        <ScrollView className={`flex-1 p-0   ${isShowing ? "h-80" : "h-full"}`}>
+      <View className="flex-row flex-1">
+        <ScrollView
+          className="flex-1"
+          onLayout={(e) => setCarAreaWidth(e.nativeEvent.layout.width)}
+        >
           <View
             style={{
               flexDirection: "row",
               flexWrap: "wrap",
-              justifyContent: "space-between",
-              columnGap: 2,
-              paddingHorizontal: 3,
-              rowGap: 10,
+              gap: GAP,
+              paddingHorizontal: PADDING,
+              rowGap: GAP,
             }}
           >
             {(isSearching && filteredCars ? filteredCars : data?.cars)?.map(
@@ -104,8 +131,9 @@ export default function Main() {
                   car={item}
                   setSelectedCar={setSelectedCar}
                   resetSearch={resetSearch}
+                  cardWidth={cardWidth}
                 />
-              )
+              ),
             )}
           </View>
         </ScrollView>
@@ -121,7 +149,7 @@ export default function Main() {
           mode="edit"
           initialValues={selectedCar}
         />
-        {isSearching && isTablet && (
+        {showSearchPanel && (
           <Search
             query={query}
             setQuery={handleSearch}
@@ -129,7 +157,7 @@ export default function Main() {
             selectedBrand={selectedBrand}
           />
         )}
-        {sideBarPropsValid && !isSearching && isTablet && isLandscape && (
+        {showSidebar && (
           <Sidebar
             car={selectedCar}
             entranceId={entranceId}
@@ -140,7 +168,7 @@ export default function Main() {
           />
         )}
       </View>
-      {isShowing && isPortrait && (
+      {(isShowing || isSearching) && isPortrait && (
         <MobileNavigation
           car={selectedCar}
           isSearching={isSearching}
@@ -149,6 +177,7 @@ export default function Main() {
           setBrand={setBrand}
           selectedBrand={selectedBrand}
           setModalVisible={setModalVisible}
+          resetSearch={resetSearch}
         />
       )}
     </SafeAreaView>

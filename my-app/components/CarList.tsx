@@ -70,7 +70,7 @@ export default function CarBrandSelect({
   };
 
   return (
-    <View className="flex-1  ">
+    <View>
       <View className="bg-white rounded-xl p-5">
         <Text className="text-xl font-semibold text-gray-800  h-10">
           Search by Make
@@ -80,7 +80,7 @@ export default function CarBrandSelect({
           Car Brand
         </Text>
 
-        <View className="relative z-10">
+        <View>
           <TouchableOpacity
             onPress={() => setIsOpen(!isOpen)}
             className="border border-gray-300 rounded-lg p-4 flex-row justify-between items-center bg-white"
@@ -95,7 +95,7 @@ export default function CarBrandSelect({
 
           {isOpen && (
             <View
-              className="absolute top-7 left-0 right-0 bg-white border border-gray-300 rounded-lg mt-2"
+              className="bg-white border border-gray-300 rounded-lg mt-2"
               style={{ height: 150 }}
             >
               <ScrollView nestedScrollEnabled={true}>

@@ -7,11 +7,13 @@ type CardBoxProps = {
   car: Car;
   setSelectedCar?: (car: Car) => void;
   resetSearch: () => void;
+  cardWidth?: number;
 };
 export default function CarBox({
   car,
   setSelectedCar,
   resetSearch,
+  cardWidth,
 }: CardBoxProps) {
   const [elapsed, setElapsed] = useState(getShortElapsed(car.createdAt));
   const { setIsShowing } = useLocation();
@@ -27,7 +29,8 @@ export default function CarBox({
   return (
     <TouchableOpacity
       key={car.ticket}
-      className="border border-gray-400 rounded-2xl  w-40 py-6  items-center  bg-white "
+      className="border border-gray-400 rounded-2xl py-6 items-center bg-white"
+      style={cardWidth != null ? { width: cardWidth } : undefined}
       onPress={() => {
         setSelectedCar && setSelectedCar(car);
         setIsShowing(true);

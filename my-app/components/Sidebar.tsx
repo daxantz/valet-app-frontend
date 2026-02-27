@@ -72,7 +72,7 @@ export default function Sidebar({
   }
 
   return (
-    <View className="  bg-white h-screen  w-1/4">
+    <View className="bg-white flex-1 w-1/4">
       <View className="p-6  flex-row items-center gap-4">
         <Image
           source={require("@/assets/images/car.png")}
@@ -83,20 +83,20 @@ export default function Sidebar({
       </View>
       <View className="p-6">
         <View>
-          <Text className="text-2xl">Make</Text>
-          <Text className="text-2xl">{car?.make}</Text>
+          <Text className="text-sm text-gray-500">Make</Text>
+          <Text className="text-xl font-medium">{car?.make}</Text>
         </View>
         <View>
-          <Text className="text-2xl">Color</Text>
-          <Text className="text-2xl">{car?.color}</Text>
+          <Text className="text-sm text-gray-500">Color</Text>
+          <Text className="text-xl font-medium">{car?.color}</Text>
         </View>
         <View>
-          <Text className="text-2xl">Phone Number</Text>
-          <Text className="text-2xl">{car?.phoneNumber}</Text>
+          <Text className="text-sm text-gray-500">Phone Number</Text>
+          <Text className="text-xl font-medium">{car?.phoneNumber}</Text>
         </View>
         <View>
-          <Text className="text-2xl">Parked At</Text>
-          <Text className="text-2xl">{car?.createdAt}</Text>
+          <Text className="text-sm text-gray-500">Parked At</Text>
+          <Text className="text-xl font-medium">{car?.createdAt}</Text>
         </View>
       </View>
       <View>

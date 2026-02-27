@@ -9,6 +9,7 @@ type MobileNavigationProps = {
   car?: Car | null;
   isSearching: boolean;
   setModalVisible?: React.Dispatch<React.SetStateAction<boolean>>;
+  resetSearch: () => void;
 } & SearchProps;
 export default function MobileNavigation({
   car,
@@ -18,44 +19,50 @@ export default function MobileNavigation({
   setBrand,
   selectedBrand,
   setModalVisible,
+  resetSearch,
 }: MobileNavigationProps) {
   const { setIsShowing } = useLocation();
   return (
-    <View className={` h-screen flex-1 flex-col justify-between `}>
+    <View className="border-t border-gray-200 bg-white flex-col justify-between">
       {isSearching ? (
-        <Search
-          query={query}
-          setQuery={setQuery}
-          setBrand={setBrand}
-          selectedBrand={selectedBrand}
-        />
+        <>
+          <View className="flex-row justify-end px-4 pt-3">
+            <X onPress={resetSearch} />
+          </View>
+          <Search
+            query={query}
+            setQuery={setQuery}
+            setBrand={setBrand}
+            selectedBrand={selectedBrand}
+          />
+        </>
       ) : (
         <>
           <View className="p-2 gap-6">
             <View className="flex-row justify-between">
-              <View className="flex-row">
-                <Text className="text-2xl">Ticket #: </Text>
-                <Text className="text-2xl">{car?.ticket}</Text>
+              <View>
+                <Text className="text-sm text-gray-500">Ticket #</Text>
+                <Text className="text-lg font-medium">{car?.ticket}</Text>
               </View>
 
               <X onPress={() => setIsShowing(false)} />
             </View>
-            <View className="flex-row">
-              <Text className="text-2xl">Make: </Text>
-              <Text className="text-2xl">{car?.make}</Text>
+            <View>
+              <Text className="text-sm text-gray-500">Make</Text>
+              <Text className="text-lg font-medium">{car?.make}</Text>
             </View>
 
-            <View className="flex-row">
-              <Text className="text-2xl">Color: </Text>
-              <Text className="text-2xl">{car?.color}</Text>
+            <View>
+              <Text className="text-sm text-gray-500">Color</Text>
+              <Text className="text-lg font-medium">{car?.color}</Text>
             </View>
-            <View className="flex-row">
-              <Text className="text-2xl">Phone Number: </Text>
-              <Text className="text-2xl">{car?.phoneNumber}</Text>
+            <View>
+              <Text className="text-sm text-gray-500">Phone Number</Text>
+              <Text className="text-lg font-medium">{car?.phoneNumber}</Text>
             </View>
-            <View className="flex-row">
-              <Text className="text-2xl">Parked At: </Text>
-              <Text className="text-2xl">{car?.createdAt}</Text>
+            <View>
+              <Text className="text-sm text-gray-500">Parked At</Text>
+              <Text className="text-lg font-medium">{car?.createdAt}</Text>
             </View>
           </View>
 
