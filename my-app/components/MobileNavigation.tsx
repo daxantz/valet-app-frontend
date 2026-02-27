@@ -4,6 +4,7 @@ import { Car } from "@/types/types";
 import { X } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import Search, { SearchProps } from "./Search";
+import { formatParkedAt } from "@/lib/util/timeFormat";
 
 type MobileNavigationProps = {
   car?: Car | null;
@@ -62,7 +63,7 @@ export default function MobileNavigation({
             </View>
             <View>
               <Text className="text-sm text-gray-500">Parked At</Text>
-              <Text className="text-lg font-medium">{car?.createdAt}</Text>
+              <Text className="text-lg font-medium">{car?.createdAt ? formatParkedAt(car.createdAt) : ""}</Text>
             </View>
           </View>
 

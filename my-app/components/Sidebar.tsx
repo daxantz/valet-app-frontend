@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import SidebarButton from "./SidebarButton";
 import { Car } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatParkedAt } from "@/lib/util/timeFormat";
 
 async function deleteCar(
   locationId: string,
@@ -96,7 +97,7 @@ export default function Sidebar({
         </View>
         <View>
           <Text className="text-sm text-gray-500">Parked At</Text>
-          <Text className="text-xl font-medium">{car?.createdAt}</Text>
+          <Text className="text-xl font-medium">{car?.createdAt ? formatParkedAt(car.createdAt) : ""}</Text>
         </View>
       </View>
       <View>

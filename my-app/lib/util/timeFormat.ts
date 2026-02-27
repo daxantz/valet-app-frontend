@@ -1,5 +1,9 @@
 import dayjs from "dayjs";
 
+export function formatParkedAt(createdAt: string) {
+  return dayjs(createdAt).format("MMM D, YYYY h:mm A");
+}
+
 export default function getShortElapsed(createdAt: string) {
   const now = dayjs();
   const created = dayjs(createdAt);
